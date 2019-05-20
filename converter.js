@@ -1,5 +1,6 @@
 const config = require("./config"),
 	fs = require("fs"),
+	he = require("he"),
 	request = require("request-promise"),
 	h2m = require("h2m");
 
@@ -48,11 +49,12 @@ class JsonToMarkdown {
 
 	slugify(text = "") {
 		return text.toString().toLowerCase()
-			.replace(/\s+/g, '-')
-			.replace(/[^\w\-]+/g, '')
-			.replace(/\-\-+/g, '-')
-			.replace(/^-+/, '') 
-			.replace(/-+$/, '');
+			//.replace(/[-!$%^&*()_+|~=`{}\[\]:";\'<>?,.\/]/, "")
+			.replace(/\s+/g, "-")
+			.replace(/[^\w\-]+/g, "")
+			.replace(/\-\-+/g, "-")
+			.replace(/^-+/, "") 
+			.replace(/-+$/, "")
 	}
 
 	async run(endpoint = "pages", perPage = 100) {
@@ -60,7 +62,7 @@ class JsonToMarkdown {
 		for (let page of pages) {
 			page = this.processPage(page);
 
-			const title = this.slugify(page.title),
+			const title = this.slugify(he.decode(page.title)),
 				content = this.buildPage(page);
 
 			if (title) {
