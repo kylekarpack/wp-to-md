@@ -10,6 +10,14 @@ class JsonToMarkdown {
 		return JSON.parse(pagesResult);
 	}
 
+	processPage(page) {
+		for (let key in page) {
+			// Process out content
+			page[key] = page[key] && page[key].rendered ? page[key].rendered : page[key];
+		}
+		return page;
+	}
+
 	buildPage(page) {
 
 		const ignoreKeys = new Set(["post_content", "content", "excerpt"])
@@ -19,9 +27,6 @@ class JsonToMarkdown {
 		let output = "---\n";
 
 		for (let key in page) {
-			// Process out content
-			page[key] = page[key] && page[key].rendered ? page[key].rendered : page[key];
-
 			if (!ignoreKeys.has(key)) {
 				output += `${key}: "${page[key]}"\n`;
 			}
@@ -53,7 +58,9 @@ class JsonToMarkdown {
 	async run(endpoint = "pages") {
 		const pages = await this.getPages(endpoint);
 		for (let page of pages) {
-			const title = this.slugify(page.title.rendered),
+			page = this.processPage(page);
+
+			const title = this.slugify(page.title),
 				content = this.buildPage(page);
 
 			if (title) {
