@@ -5,32 +5,37 @@ const config = require("./config"),
 
 class JsonToMarkdown {
 
-	async getPages() {
-		let pagesResult = await request.get(`${config.wpBaseUrl}/wp-json/wp/v2/pages`),
-			pages = JSON.parse(pagesResult);
-		console.log(pages)
+	async getPages(endpoint) {
+		let pagesResult = await request.get(`${config.wpBaseUrl}/wp-json/wp/v2/${endpoint}`);
+		return JSON.parse(pagesResult);
 	}
 
-	parse(file = "./wp_posts.json") {
-		return JSON.parse(fs.readFileSync(file).toString()).find(el => el.type === "table").data;
-	}
+	buildPage(page) {
 
-	buildPost(post) {
-		if (!post.ID) {
-			return;
-		}
+		const ignoreKeys = new Set(["post_content", "content", "excerpt"])
+		const contentKeys = new Set(["post_content", "content"]);
 
+		// Create frontmatter
 		let output = "---\n";
 
-		for (let key in post) {
-			if (key !== "post_content") {
-				output += `${key}: "${post[key]}"\n`;
+		for (let key in page) {
+			// Process out content
+			page[key] = page[key] && page[key].rendered ? page[key].rendered : page[key];
+
+			if (!ignoreKeys.has(key)) {
+				output += `${key}: "${page[key]}"\n`;
 			}
 		}
 
 		output += "---\n";
 
-		output += h2m(post.post_content);
+		// Create content
+		for (let key in page) {
+			if (contentKeys.has(key)) {
+				output += h2m(page[key]);
+				return output; // Only allow one content item
+			}
+		}
 
 		return output;
 
@@ -45,21 +50,19 @@ class JsonToMarkdown {
 			.replace(/-+$/, '');
 	}
 
-	run() {
-		this.getPages();
-		return;
-		const posts = this.parse();
-		for (let post of posts) {
-			const title = this.slugify(post.post_title),
-				content = this.buildPost(post);
+	async run(endpoint = "pages") {
+		const pages = await this.getPages(endpoint);
+		for (let page of pages) {
+			const title = this.slugify(page.title.rendered),
+				content = this.buildPage(page);
 
 			if (title) {
-				fs.mkdirSync(`./output/${title}`, { recursive: true });
-				fs.writeFileSync(`./output/${title}/index.md`, content);
+				fs.mkdirSync(`./output/${endpoint}/${title}`, { recursive: true });
+				fs.writeFileSync(`./output/${endpoint}/${title}/index.md`, content);
 			}
 
 		}
-		console.info(`Converted ${posts.length} posts`);
+		console.info(`Converted ${pages.length} pages`);
 	}
 
 
