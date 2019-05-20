@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "h2m": "^0.7.0"
+    "h2m": "^0.7.0",
+    "request-promise": "^4.2.4"
   }
 }

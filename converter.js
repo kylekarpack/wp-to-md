@@ -1,7 +1,15 @@
-const fs = require("fs"),
+const config = require("./config"),
+	fs = require("fs"),
+	request = require("request-promise"),
 	h2m = require("h2m");
 
 class JsonToMarkdown {
+
+	async getPages() {
+		let pagesResult = await request.get(`${config.wpBaseUrl}/wp-json/wp/v2/pages`),
+			pages = JSON.parse(pagesResult);
+		console.log(pages)
+	}
 
 	parse(file = "./wp_posts.json") {
 		return JSON.parse(fs.readFileSync(file).toString()).find(el => el.type === "table").data;
@@ -38,19 +46,20 @@ class JsonToMarkdown {
 	}
 
 	run() {
+		this.getPages();
+		return;
 		const posts = this.parse();
 		for (let post of posts) {
 			const title = this.slugify(post.post_title),
 				content = this.buildPost(post);
 
-			console.log(posts.length);
-			console.log("title is", title);
 			if (title) {
 				fs.mkdirSync(`./output/${title}`, { recursive: true });
 				fs.writeFileSync(`./output/${title}/index.md`, content);
 			}
 
 		}
+		console.info(`Converted ${posts.length} posts`);
 	}
 
 
