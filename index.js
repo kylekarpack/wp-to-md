@@ -1,5 +1,10 @@
-const JsonToMarkdown = require("./converter.js");
+const JsonToMarkdown = require("./converter.js"),
+	postTypes = require("./config").postTypes,
+	perPage = require("./config").perPage;
 
 const converter = new JsonToMarkdown();
 
-converter.run();
+// For my site
+for (let postType of postTypes) {
+	converter.run(postType, perPage);
+}

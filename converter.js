@@ -5,8 +5,8 @@ const config = require("./config"),
 
 class JsonToMarkdown {
 
-	async getPages(endpoint) {
-		let pagesResult = await request.get(`${config.wpBaseUrl}/wp-json/wp/v2/${endpoint}`);
+	async getPages(endpoint, perPage) {
+		let pagesResult = await request.get(`${config.wpBaseUrl}/wp-json/wp/v2/${endpoint}?per_page=${perPage}`);
 		return JSON.parse(pagesResult);
 	}
 
@@ -55,8 +55,8 @@ class JsonToMarkdown {
 			.replace(/-+$/, '');
 	}
 
-	async run(endpoint = "pages") {
-		const pages = await this.getPages(endpoint);
+	async run(endpoint = "pages", perPage = 100) {
+		const pages = await this.getPages(endpoint, perPage);
 		for (let page of pages) {
 			page = this.processPage(page);
 
@@ -69,7 +69,7 @@ class JsonToMarkdown {
 			}
 
 		}
-		console.info(`Converted ${pages.length} pages`);
+		console.info(`Converted ${pages.length} ${endpoint}`);
 	}
 
 
