@@ -18,35 +18,36 @@ class JsonToMarkdown {
 
 	processPage(page) {
 		for (let key in page) {
-			// Process out content
+			// Process out rendered content
 			page[key] = page[key] && page[key].rendered ? page[key].rendered : page[key];
 		}
+
+		// Normalize the content
+		page.content = page.content || page.post_content || page.excerpt;
+		delete page.excerpt;
+		delete page.post_content;
+
 		return page;
 	}
 
-	buildPage(page) {
+	buildMarkdownFromPage(inputPage) {
 
-		const ignoreKeys = new Set(["post_content", "content", "excerpt"])
-		const contentKeys = new Set(["post_content", "content"]);
+		const page = { ...inputPage }; // Make a copy for non-destructive edits
+
+		const markdownContent = h2m(page.content);
+		delete page.content;
 
 		// Create frontmatter
 		let output = "---\n";
 
 		for (let key in page) {
-			if (!ignoreKeys.has(key)) {
-				output += `${key}: "${page[key]}"\n`;
-			}
+			output += `${key}: "${page[key]}"\n`;	
 		}
 
 		output += "---\n";
 
-		// Create content
-		for (let key in page) {
-			if (contentKeys.has(key)) {
-				output += h2m(page[key]);
-				return output; // Only allow one content item
-			}
-		}
+		// Add in markdown content
+		output += markdownContent;
 
 		return output;
 
@@ -57,8 +58,7 @@ class JsonToMarkdown {
 		for (let page of pages) {
 			page = this.processPage(page);
 
-			let title = this.utils.slugify(he.decode(page.title)),
-				content = this.buildPage(page);
+			let title = this.utils.slugify(he.decode(page.title));
 
 			// Prepend dates to posts
 			if (endpoint !== "pages") {
@@ -66,8 +66,11 @@ class JsonToMarkdown {
 			}
 
 			if (title) {
-				fs.mkdirSync(`./output/${endpoint}/${title}`, { recursive: true });
-				fs.writeFileSync(`./output/${endpoint}/${title}/index.md`, content);
+				const content = this.buildMarkdownFromPage(page),
+					directory = `./output/${endpoint}/${title}`;
+
+				fs.mkdirSync(directory, { recursive: true });
+				fs.writeFileSync(`${directory}/index.md`, content);
 			}
 
 		}
