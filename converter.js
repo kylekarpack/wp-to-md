@@ -1,10 +1,15 @@
 const config = require("./config"),
+	Utils = require("./utils"),
 	fs = require("fs"),
 	he = require("he"),
 	request = require("request-promise"),
 	h2m = require("h2m");
 
 class JsonToMarkdown {
+
+	constructor() {
+		this.utils = new Utils();
+	}
 
 	async getPages(endpoint, perPage) {
 		let pagesResult = await request.get(`${config.wpBaseUrl}/wp-json/wp/v2/${endpoint}?per_page=${perPage}`);
@@ -47,23 +52,18 @@ class JsonToMarkdown {
 
 	}
 
-	slugify(text = "") {
-		return text.toString().toLowerCase()
-			//.replace(/[-!$%^&*()_+|~=`{}\[\]:";\'<>?,.\/]/, "")
-			.replace(/\s+/g, "-")
-			.replace(/[^\w\-]+/g, "")
-			.replace(/\-\-+/g, "-")
-			.replace(/^-+/, "") 
-			.replace(/-+$/, "")
-	}
-
 	async run(endpoint = "pages", perPage = 100) {
 		const pages = await this.getPages(endpoint, perPage);
 		for (let page of pages) {
 			page = this.processPage(page);
 
-			const title = this.slugify(he.decode(page.title)),
+			let title = this.utils.slugify(he.decode(page.title)),
 				content = this.buildPage(page);
+
+			// Prepend dates to posts
+			if (endpoint !== "pages") {
+				title = `${this.utils.dateify(page.date)}-${title}`;
+			}
 
 			if (title) {
 				fs.mkdirSync(`./output/${endpoint}/${title}`, { recursive: true });
