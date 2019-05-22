@@ -1,9 +1,8 @@
 const config = require("./config"),
 	Utils = require("./utils"),
+	Page = require("./page"),
 	fs = require("fs"),
-	he = require("he"),
-	request = require("request-promise"),
-	h2m = require("h2m");
+	request = require("request-promise");
 
 class JsonToMarkdown {
 
@@ -16,61 +15,21 @@ class JsonToMarkdown {
 		return JSON.parse(pagesResult);
 	}
 
-	processPage(page) {
-		for (let key in page) {
-			// Process out rendered content
-			page[key] = page[key] && page[key].rendered ? page[key].rendered : page[key];
-		}
-
-		// Normalize the content
-		page.content = page.content || page.post_content || page.excerpt;
-		delete page.excerpt;
-		delete page.post_content;
-
-		return page;
-	}
-
-	buildMarkdownFromPage(inputPage) {
-
-		const page = { ...inputPage }; // Make a copy for non-destructive edits
-
-		const markdownContent = h2m(page.content);
-		delete page.content;
-
-		// Create frontmatter
-		let output = "---\n";
-
-		for (let key in page) {
-			output += `${key}: "${page[key]}"\n`;	
-		}
-
-		output += "---\n";
-
-		// Add in markdown content
-		output += markdownContent;
-
-		return output;
+	extractImages(page) {
 
 	}
 
 	async run(endpoint = "pages", perPage = 100) {
+		
 		const pages = await this.getPages(endpoint, perPage);
-		for (let page of pages) {
-			page = this.processPage(page);
+		
+		for (let p of pages) {
+			
+			const page = new Page(p);
 
-			let title = this.utils.slugify(he.decode(page.title));
-
-			// Prepend dates to posts
-			if (endpoint !== "pages") {
-				title = `${this.utils.dateify(page.date)}-${title}`;
-			}
-
-			if (title) {
-				const content = this.buildMarkdownFromPage(page),
-					directory = `./output/${endpoint}/${title}`;
-
-				fs.mkdirSync(directory, { recursive: true });
-				fs.writeFileSync(`${directory}/index.md`, content);
+			if (page.title) {
+				fs.mkdirSync(page.directory, { recursive: true });
+				fs.writeFileSync(`${page.directory}/index.md`, page.renderAsMarkdown());
 			}
 
 		}
