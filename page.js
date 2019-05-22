@@ -10,10 +10,10 @@ class Page {
 	constructor(page) {
 
 		this.imageMap = new Map();
+		this.utils = new Utils();
 
 		// Normalize on instantiation
 		this.page = this.processPage(page);
-		this.utils = new Utils();
 	}
 
 	get title() {
@@ -49,7 +49,7 @@ class Page {
 
 		for (let key in this.page) {
 			if (key !== "content") {
-				output += `${key}: "${this.page[key]}"\n`;	
+				output += `${key}: "${this.page[key]}"\n`;
 			}
 		}
 
@@ -62,10 +62,14 @@ class Page {
 	}
 
 	processPage(page) {
+
+		// Process out rendered content
 		for (let key in page) {
-			// Process out rendered content
 			page[key] = page[key] && page[key].rendered ? page[key].rendered : page[key];
 		}
+
+		// Flatten out anything left that is nested
+		page = this.utils.flattenObject(page);
 
 		// Normalize the content
 		page.content = page.content || page.post_content || page.excerpt;
@@ -81,16 +85,18 @@ class Page {
 		// 	}
 		// }
 
-		const $ = cheerio.load(page.content);
-		$("img").each((i, el) => {
-			if (el.attribs.src) {
-				const src = el.attribs.src.split("/").pop().split("?")[0];
-				this.imageMap.set(el.attribs.src, src);
-				el.attribs.src = src;
-			}
-		});
+		if (page.content) {
+			const $ = cheerio.load(page.content);
+			$("img").each((i, el) => {
+				if (el.attribs.src) {
+					const src = el.attribs.src.split("/").pop().split("?")[0];
+					this.imageMap.set(el.attribs.src, src);
+					el.attribs.src = src;
+				}
+			});
 
-		page.content = $.html();
+			page.content = $.html();
+		}
 
 		return page;
 	}

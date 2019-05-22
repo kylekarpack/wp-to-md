@@ -7,7 +7,7 @@ class Utils {
 		if (!date) {
 			return "";
 		}
-		
+
 		if (typeof date === "string") {
 			date = new Date(date);
 		}
@@ -21,8 +21,22 @@ class Utils {
 			.replace(/\s+/g, "-")
 			.replace(/[^\w\-]+/g, "")
 			.replace(/\-\-+/g, "-")
-			.replace(/^-+/, "") 
+			.replace(/^-+/, "")
 			.replace(/-+$/, "")
+	}
+
+	flattenObject(obj) {
+		const flattened = {}
+
+		Object.keys(obj).forEach((key) => {
+			if (typeof obj[key] === "object" && obj[key] !== null) {
+				Object.assign(flattened, this.flattenObject(obj[key]))
+			} else {
+				flattened[key] = obj[key]
+			}
+		})
+
+		return flattened
 	}
 }
 
