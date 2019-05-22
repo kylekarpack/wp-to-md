@@ -15,10 +15,6 @@ class JsonToMarkdown {
 		return JSON.parse(pagesResult);
 	}
 
-	extractImages(page) {
-
-	}
-
 	async run(endpoint = "pages", perPage = 100) {
 		
 		const pages = await this.getPages(endpoint, perPage);
@@ -28,6 +24,7 @@ class JsonToMarkdown {
 			const page = new Page(p);
 
 			if (page.title) {
+				page.saveImages();
 				fs.mkdirSync(page.directory, { recursive: true });
 				fs.writeFileSync(`${page.directory}/index.md`, page.renderAsMarkdown());
 			}
