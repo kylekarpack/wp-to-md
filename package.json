@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "cheerio": "^1.0.0-rc.3",
+    "cli-progress": "^2.1.1",
     "h2m": "^0.7.0",
     "he": "^1.2.0",
     "request-promise": "^4.2.4"

@@ -3,14 +3,14 @@ const Utils = require("./utils"),
 	htmlToMarkdown = require("h2m"),
 	cheerio = require("cheerio"),
 	request = require("request-promise"),
-	fs = require("fs");
+	fs = require("fs"),
+	progress = require("cli-progress");
 
 class Page {
 
 	constructor(page) {
 
 		this.imageMap = new Map();
-		this.utils = new Utils();
 
 		// Normalize on instantiation
 		this.page = this.processPage(page);
@@ -21,10 +21,10 @@ class Page {
 	 * @returns {string}
 	 */
 	get title() {
-		let title = this.utils.slugify(htmlEntities.decode(this.page.title));
+		let title = Utils.slugify(htmlEntities.decode(this.page.title));
 		// Prepend dates to posts
 		if (this.page.type !== "page") {
-			title = `${this.utils.dateify(this.page.date)}-${title}`;
+			title = `${Utils.dateify(this.page.date)}-${title}`;
 		}
 		return title;
 	}
@@ -42,14 +42,30 @@ class Page {
 	 * @returns {void}
 	 */
 	async saveImages() {
-		for (let item of this.imageMap) {
-			try {
-				const image = await request.get(item[0]);
-				fs.writeFileSync(`${this.directory}/${item[1]}`, image);
-			} catch (e) {
-				console.error("Could not get image", item[0]);
+
+		if (this.imageMap.size) {
+			// Start a progress bar
+			const bar = new progress.Bar({}, progress.Bar.shades_classic),
+				failures = [];
+			bar.start(this.imageMap.size, 0);
+
+			for await (let item of this.imageMap) {
+				try {
+					const image = await request.get(item[0]);
+					fs.writeFileSync(`${this.directory}/${item[1]}`, image);
+				} catch (e) {
+					failures.push(item[0]);
+				}
+				bar.increment();
 			}
+
+			if (failures.length) {
+				console.warn("Could not get the following images", failures);
+			}
+
+			bar.stop();
 		}
+
 	}
 
 	/**
@@ -90,10 +106,10 @@ class Page {
 			page[key] = page[key] && page[key].rendered ? page[key].rendered : page[key];
 		}
 
-		this.utils.flattenObject()
+		Utils.flattenObject()
 
 		// Flatten out anything left that is nested
-		page = this.utils.flattenObject(page);
+		page = Utils.flattenObject(page);
 
 		// Normalize the content
 		page.content = page.content || page.post_content || page.excerpt;

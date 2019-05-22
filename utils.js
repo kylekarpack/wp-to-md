@@ -6,7 +6,7 @@ class Utils {
 	 * @returns {string}
 	 * @example padDatePart(3); // returns "03"
 	 */
-	padDatePart(n) {
+	static padDatePart(n) {
 		return String(n).padStart(2, "0");
 	}
 
@@ -16,7 +16,7 @@ class Utils {
 	 * @returns {string}
 	 * @example dateify(new Date()); // returns "YYYY-MM-DD"
 	 */
-	dateify(date) {
+	static dateify(date) {
 		if (!date) {
 			return "";
 		}
@@ -25,7 +25,7 @@ class Utils {
 			date = new Date(date);
 		}
 
-		return `${date.getFullYear()}-${this.padDatePart(date.getMonth() + 1)}-${this.padDatePart(date.getDate())}`;
+		return `${date.getFullYear()}-${Utils.padDatePart(date.getMonth() + 1)}-${Utils.padDatePart(date.getDate())}`;
 	}
 
 	/**
@@ -34,7 +34,7 @@ class Utils {
 	 * @returns {string}
 	 * @example slugify("It's some test text"); // returns "its-some-test-text"
 	 */
-	slugify(text = "") {
+	static slugify(text = "") {
 		return text.toString().toLowerCase()
 			.replace(/\s+/g, "-")
 			.replace(/[^\w\-]+/g, "")
@@ -49,12 +49,17 @@ class Utils {
 	 * @returns {Object}
 	 * @example flattenObject({ a: 1, b: { c: 2 } }); // returns { a: 1, c: 2 }
 	 */
-	flattenObject(obj) {
+	static flattenObject(obj) {
+
+		if (!obj) {
+			return obj;
+		}
+
 		const flattened = {}
 
 		Object.keys(obj).forEach((key) => {
 			if (typeof obj[key] === "object" && obj[key] !== null) {
-				Object.assign(flattened, this.flattenObject(obj[key]))
+				Object.assign(flattened, Utils.flattenObject(obj[key]))
 			} else {
 				flattened[key] = obj[key]
 			}

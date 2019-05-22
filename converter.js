@@ -1,14 +1,9 @@
 const config = require("./config"),
-	Utils = require("./utils"),
 	Page = require("./page"),
 	fs = require("fs"),
 	request = require("request-promise");
 
 class JsonToMarkdown {
-
-	constructor() {
-		this.utils = new Utils();
-	}
 
 	/**
 	 * Query the WordPress API to get pages/posts/etc
