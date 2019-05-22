@@ -16,6 +16,10 @@ class Page {
 		this.page = this.processPage(page);
 	}
 
+	/**
+	 * Get the title of the page / post
+	 * @returns {string}
+	 */
 	get title() {
 		let title = this.utils.slugify(htmlEntities.decode(this.page.title));
 		// Prepend dates to posts
@@ -25,10 +29,18 @@ class Page {
 		return title;
 	}
 
+	/**
+	 * Get the directory location where files related to this page / post belong
+	 * @returns {string}
+	 */
 	get directory() {
 		return `./output/${this.page.type}/${this.title}`
 	}
 
+	/**
+	 * Download all images in this page and save to disk
+	 * @returns {void}
+	 */
 	async saveImages() {
 		for (let item of this.imageMap) {
 			try {
@@ -40,6 +52,10 @@ class Page {
 		}
 	}
 
+	/**
+	 * Output the post as a string containing markdown
+	 * @returns {string}
+	 */
 	renderAsMarkdown() {
 
 		const markdownContent = htmlToMarkdown(this.page.content);
@@ -61,12 +77,20 @@ class Page {
 		return output;
 	}
 
+	/**
+	 * Make pages and posts have the same general structure
+	 * Process out any irregularities
+	 * @param  {Object} page
+	 * @returns {Object}
+	 */
 	processPage(page) {
 
 		// Process out rendered content
 		for (let key in page) {
 			page[key] = page[key] && page[key].rendered ? page[key].rendered : page[key];
 		}
+
+		this.utils.flattenObject()
 
 		// Flatten out anything left that is nested
 		page = this.utils.flattenObject(page);

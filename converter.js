@@ -10,11 +10,23 @@ class JsonToMarkdown {
 		this.utils = new Utils();
 	}
 
+	/**
+	 * Query the WordPress API to get pages/posts/etc
+	 * @param  {string} endpoint
+	 * @param  {number} perPage
+	 * @returns {Promise<Object[]>}
+	 */
 	async getPages(endpoint, perPage) {
 		let pagesResult = await request.get(`${config.wpBaseUrl}/wp-json/wp/v2/${endpoint}?per_page=${perPage}`);
 		return JSON.parse(pagesResult);
 	}
 
+	/**
+	 * Run the application with sensible defaults
+	 * @param  {string} endpoint="pages"
+	 * @param  {number} perPage=100
+	 * @returns {void}
+	 */
 	async run(endpoint = "pages", perPage = 100) {
 		
 		const pages = await this.getPages(endpoint, perPage);
