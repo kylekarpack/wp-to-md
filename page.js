@@ -51,8 +51,11 @@ class Page {
 
 			for await (let item of this.imageMap) {
 				try {
-					const image = await request.get(item[0]);
-					fs.writeFileSync(`${this.directory}/${item[1]}`, image);
+					if (item[0].startsWith("http")) {
+						await request.get(item[0]).pipe(
+							fs.createWriteStream(`${this.directory}/${item[1]}`)
+						);
+					}
 				} catch (e) {
 					failures.push(item[0]);
 				}
@@ -132,6 +135,11 @@ class Page {
 					const src = el.attribs.src.split("/").pop().split("?")[0];
 					this.imageMap.set(el.attribs.src, src);
 					el.attribs.src = src;
+
+					// Get first image as the cover
+					if (!page.cover) {
+						page.cover = `./${src}`;
+					}
 				}
 			});
 
