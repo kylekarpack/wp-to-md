@@ -132,13 +132,13 @@ class Page {
 			const $ = cheerio.load(page.content);
 			$("img").each((i, el) => {
 				if (el.attribs.src) {
-					const src = el.attribs.src.split("/").pop().split("?")[0];
+					const src = `./${el.attribs.src.split("/").pop().split("?")[0]}`;
 					this.imageMap.set(el.attribs.src, src);
 					el.attribs.src = src;
 
 					// Get first image as the cover
 					if (!page.cover) {
-						page.cover = `./${src}`;
+						page.cover = src;
 					}
 				}
 			});
