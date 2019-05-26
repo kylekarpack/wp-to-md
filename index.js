@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const JsonToMarkdown = require("./converter.js"),
 	program = require("commander"),
 	package = require("./package.json")
