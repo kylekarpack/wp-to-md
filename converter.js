@@ -1,5 +1,6 @@
 const Page = require("./page"),
 	fs = require("fs"),
+	path = require("path"),
 	request = require("request-promise");
 
 class JsonToMarkdown {
@@ -40,11 +41,14 @@ class JsonToMarkdown {
 			const page = new Page(p);
 
 			if (page.title) {
+
+				const outputDir = path.join(this.options.output, page.directory)
+
 				// Create the directory for the post and images
-				fs.mkdirSync(page.directory, { recursive: true });
+				fs.mkdirSync(outputDir, { recursive: true });
 
 				// Write the post content to a markdown file
-				fs.writeFileSync(`${page.directory}/index.md`, page.renderAsMarkdown());
+				fs.writeFileSync(path.join(outputDir, "/index.md"), page.renderAsMarkdown());
 
 				// Download all images out of the post
 				await page.saveImages();

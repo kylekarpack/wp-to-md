@@ -1,11 +1,13 @@
 const JsonToMarkdown = require("./converter.js"),
-	program = require("commander");
+	program = require("commander"),
+	package = require("./package.json")
 
 // Use Commander.js to implement a command line interface
 program
-	.version("1.0.0")
-	.description("Convert WordPress content to markdown using the WordPress API")
+	.version(package.version)
+	.description(package.description)
 	.option("-u, --url <type>", "WordPress API URL Base")
+	.option("-o, --output <type>", "Output directory", "./output")
 	.option("-t, --type <type>", "Post type to process", "pages")
 	.option("-n, --number <type>", "Maximum number of entries to process", 100);
 

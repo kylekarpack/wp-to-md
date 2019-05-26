@@ -34,7 +34,7 @@ class Page {
 	 * @returns {string}
 	 */
 	get directory() {
-		return `./output/${this.page.type}/${this.title}`
+		return `./${this.page.type}/${this.title}`
 	}
 
 	/**
