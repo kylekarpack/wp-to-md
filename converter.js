@@ -28,7 +28,7 @@ class JsonToMarkdown {
 	}
 
 	/**
-	 * Run the application
+	 * Run the application, log progress and stats when complete
 	 * @returns {void}
 	 */
 	async run() {
@@ -40,16 +40,20 @@ class JsonToMarkdown {
 			const page = new Page(p);
 
 			if (page.title) {
-				await page.saveImages();
+				// Create the directory for the post and images
 				fs.mkdirSync(page.directory, { recursive: true });
+
+				// Write the post content to a markdown file
 				fs.writeFileSync(`${page.directory}/index.md`, page.renderAsMarkdown());
+
+				// Download all images out of the post
+				await page.saveImages();
+
 			}
 
 		}
 		console.info(`Converted ${pages.length} ${this.options.type}`);
 	}
-
-
 }
 
 module.exports = JsonToMarkdown;
