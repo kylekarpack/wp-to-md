@@ -69,6 +69,8 @@ class Page {
 			bar.stop();
 		}
 
+		return true;
+
 	}
 
 	/**

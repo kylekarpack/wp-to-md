@@ -1,43 +1,52 @@
-const config = require("./config"),
-	Page = require("./page"),
+const Page = require("./page"),
 	fs = require("fs"),
 	request = require("request-promise");
 
 class JsonToMarkdown {
 
+	constructor(options) {
+		if (!options.url) {
+			throw "Base URL for WordPress instance is required";
+		}
+		this.options = options;
+	}
+
 	/**
 	 * Query the WordPress API to get pages/posts/etc
-	 * @param  {string} endpoint
-	 * @param  {number} perPage
-	 * @returns {Promise<Object[]>}
+	 * @returns {Promise<Object[]>} array of pages/posts/etc
 	 */
-	async getPages(endpoint, perPage) {
-		let pagesResult = await request.get(`${config.wpBaseUrl}/wp-json/wp/v2/${endpoint}?per_page=${perPage}`);
+	async getPages() {
+		let pagesResult = [],
+			url =`${this.options.url}/wp-json/wp/v2/${this.options.type}?per_page=${this.options.number}`;
+
+		try {
+			pagesResult = await request.get(url);
+		} catch (err) {
+			throw `Could not get ${this.options.type}: ${err.toString()}`
+		} 
 		return JSON.parse(pagesResult);
 	}
 
 	/**
-	 * Run the application with sensible defaults
-	 * @param  {string} endpoint="pages"
-	 * @param  {number} perPage=100
+	 * Run the application
 	 * @returns {void}
 	 */
-	async run(endpoint = "pages", perPage = 100) {
+	async run() {
 		
-		const pages = await this.getPages(endpoint, perPage);
+		const pages = await this.getPages();
 		
 		for (let p of pages) {
 			
 			const page = new Page(p);
 
 			if (page.title) {
-				page.saveImages();
+				await page.saveImages();
 				fs.mkdirSync(page.directory, { recursive: true });
 				fs.writeFileSync(`${page.directory}/index.md`, page.renderAsMarkdown());
 			}
 
 		}
-		console.info(`Converted ${pages.length} ${endpoint}`);
+		console.info(`Converted ${pages.length} ${this.options.type}`);
 	}
 
 
