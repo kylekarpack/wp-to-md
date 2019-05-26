@@ -2,7 +2,7 @@
   "name": "wp-to-md",
   "preferGlobal": true,
   "bin": "index.js",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Convert WordPress content to markdown using the WordPress API",
   "main": "index.js",
   "repository": "https://github.com/kylekarpack/wp-to-md.git",
@@ -16,5 +16,13 @@
     "h2m": "^0.7.0",
     "he": "^1.2.0",
     "request-promise": "^4.2.4"
-  }
+  },
+  "keywords": [
+	  "markdown",
+	  "wordpress",
+	  "converter",
+	  "blog",
+	  "static-site",
+	  "javascript"
+  ]
 }
