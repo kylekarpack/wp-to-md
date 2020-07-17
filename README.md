@@ -5,13 +5,18 @@ This tool is designed to download rendered content from WordPress via the API an
 ## Installation
 
  ```
- $ npm i -g wp-to-md
- ``` 
+ yarn global add wp-to-md
+ ```
  or 
- ```
- $ yarn global add wp-to-md
- ```
 
+ ```
+ npm i -g wp-to-md
+ ```
+ 
+ You can also run the tool without installing if you prefer, via `npx`:
+ ```
+ npx wp-to-md [options]
+ ```
 
 ## Usage
 ```
