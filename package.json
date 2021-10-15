@@ -11,7 +11,7 @@
   "private": false,
   "dependencies": {
     "cheerio": "^1.0.0-rc.3",
-    "cli-progress": "^2.1.1",
+    "cli-progress": "^3.6.1",
     "commander": "^2.20.3",
     "h2m": "^0.7.0",
     "he": "^1.2.0",
