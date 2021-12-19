@@ -6,7 +6,7 @@
   "description": "Convert WordPress content to markdown using the WordPress API",
   "main": "index.js",
   "repository": "https://github.com/kylekarpack/wp-to-md.git",
-  "author": "Kyle Karpack <kylekarpack@gmail.com>",
+  "author": "Kyle Karpack <kylekarpack+wptomd@gmail.com>",
   "license": "MIT",
   "private": false,
   "dependencies": {
