@@ -88,12 +88,11 @@ cheerio@^1.0.0-rc.3:
     lodash "^4.15.0"
     parse5 "^3.0.1"
 
-cli-progress@^3.6.1:
-  version "3.9.1"
-  resolved "https://registry.yarnpkg.com/cli-progress/-/cli-progress-3.9.1.tgz#a22eba6a20f53289fdd05d5ee8cb2cc8c28f866e"
-  integrity sha512-AXxiCe2a0Lm0VN+9L0jzmfQSkcZm5EYspfqXKaSIQKqIk+0hnkZ3/v1E9B39mkD6vYhKih3c/RPsJBSwq9O99Q==
+cli-progress@^3.10.0:
+  version "3.10.0"
+  resolved "https://registry.yarnpkg.com/cli-progress/-/cli-progress-3.10.0.tgz#63fd9d6343c598c93542fdfa3563a8b59887d78a"
+  integrity sha512-kLORQrhYCAtUPLZxqsAt2YJGOvRdt34+O6jl5cQGb7iF3dM55FQZlTR+rQyIK9JUcO9bBMwZsTlND+3dmFU2Cw==
   dependencies:
-    colors "^1.1.2"
     string-width "^4.2.0"
 
 clipboardy@~1.2.3:
@@ -103,11 +102,6 @@ clipboardy@~1.2.3:
   dependencies:
     arch "^2.1.0"
     execa "^0.8.0"
-
-colors@^1.1.2:
-  version "1.3.3"
-  resolved "https://registry.yarnpkg.com/colors/-/colors-1.3.3.tgz#39e005d546afe01e01f9c4ca8fa50f686a01205d"
-  integrity sha512-mmGt/1pZqYRjMxB1axhTo16/snVZ5krrKkcmMeVKxzECMMXoCgnvTPp10QgHfcbQZw8Dq2jMNG6je4JlWU0gWg==
 
 combined-stream@^1.0.6, combined-stream@~1.0.6:
   version "1.0.8"
